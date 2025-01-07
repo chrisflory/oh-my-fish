@@ -1,6 +1,6 @@
 > ⚠️ Oh My Fish has been unmaintained for years, and certain parts of it may not work for you. A few themes and packages are currently broken, and the code is due a significant overhaul. The current set of maintainers have ran out of steam, so if you are interested in becoming a maintainer send an email to *oh-my-fish [at] googlegroups.com*.
 
-<img src="https://cdn.rawgit.com/chrisflory/oh-my-fish/e4f1c2e0219a17e2c748b824004c8d0b38055c16/docs/logo.svg" align="left" width="192px" height="192px"/>
+<img src="https://cdn.rawgit.com/oh-my-fish/oh-my-fish/e4f1c2e0219a17e2c748b824004c8d0b38055c16/docs/logo.svg" align="left" width="192px" height="192px"/>
 <img align="left" width="0" height="192px" hspace="10"/>
 
 > The <a href="http://fishshell.com">Fishshell</a> Framework
@@ -33,31 +33,31 @@ Oh My Fish provides core infrastructure to allow you to install packages which e
 You can get started right away with the default setup by running this in your terminal:
 
 ```fish
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+curl https://raw.githubusercontent.com/chrisflory/oh-my-fish/master/bin/install | fish
 ```
 
 This will download the installer script and start the installation. Alternatively, you can download the installer and customize your install:
 
 ```fish
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > install
+curl https://raw.githubusercontent.com/chrisflory/oh-my-fish/master/bin/install > install
 fish install --path=~/.local/share/omf --config=~/.config/omf
 ```
 
 You can verify the integrity of the downloaded installer by verifying the script against [this checksum](bin/install.sha256):
 
 ```
-curl -sL https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install.sha256 | shasum -a 256 --check
+curl -sL https://raw.githubusercontent.com/chrisflory/oh-my-fish/master/bin/install.sha256 | shasum -a 256 --check
 ```
 
 You can also install Oh My Fish with Git or with an offline source tarball downloaded from the [releases page][releases]:
 
 ```fish
 # with git
-$ git clone https://github.com/oh-my-fish/oh-my-fish
+$ git clone https://github.com/chrisflory/oh-my-fish
 $ cd oh-my-fish
 $ bin/install --offline
 # with a tarball
-$ curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > install
+$ curl https://raw.githubusercontent.com/chrisflory/oh-my-fish/master/bin/install > install
 $ fish install --offline=omf.tar.gz
 ```
 
