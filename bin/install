@@ -332,8 +332,12 @@ function install_config
     or echo "default" > "$OMF_CONFIG/theme"
 
   # Install plugins
-  fish -c "omf install"
-    or abort "Error installing plugins"
+  if set -q OFFLINE
+    say "To complete the Oh My Fish installation, please run the command \"omf install\" (without \") when network access is available"
+  else
+    fish -c "omf install"
+      or abort "Error installing plugins"
+  end
 end
 
 
@@ -474,7 +478,7 @@ function sane_environment_check
     abort (which awk)" does not look like an AWK interpreter."
   end
 
-  assert_fish_version_compatible 2.2.0
+  assert_fish_version_compatible 3.0.0
   assert_git_version_compatible 1.9.5
 
   debug "Verifying Git implementation is not buggy Git for Windows"

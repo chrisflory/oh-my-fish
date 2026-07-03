@@ -47,8 +47,7 @@ function require
 
   for init in $init_path
     emit perf:timer:start $init
-    set -l IFS '/'
-    echo $init | read -la components
+    echo $init | read --delimiter '/' -la components
 
     set path (printf '/%s' $components[1..-2])
 
@@ -62,8 +61,7 @@ function require
       set dependencies
 
       if test -f $bundle
-        set -l IFS ' '
-        while read -l type dependency
+        while read --delimiter ' ' -l type dependency
           test "$type" != package
             and continue
           require "$dependency"
@@ -81,6 +79,8 @@ function require
   end
 
   for conf in $conf_path
+    echo $conf | read --delimiter '/' -la components
+    set path (printf '/%s' $components[1..-3])
     source $conf
   end
 
