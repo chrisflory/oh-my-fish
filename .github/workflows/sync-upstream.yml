@@ -1,15 +1,9 @@
-# Weekly upstream sync for the chrisflory fork (also runnable manually).
 name: Sync upstream
 
 on:
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Optional note for this run'
-        required: false
-        default: 'manual'
 
 permissions:
   contents: write
@@ -39,8 +33,10 @@ jobs:
         run: |
           BEHIND=$(git rev-list --count HEAD..upstream/master)
           echo "count=$BEHIND" >> "$GITHUB_OUTPUT"
-          if test "$BEHIND" -eq 0; then
+          if [ "$BEHIND" -eq 0 ]; then
             echo "Already up to date with upstream."
+          else
+            echo "Behind upstream by $BEHIND commit(s)."
           fi
 
       - name: Merge upstream
@@ -67,22 +63,19 @@ jobs:
         run: |
           git push -u origin sync/upstream-master --force
           EXISTING=$(gh pr list --head sync/upstream-master --json number --jq '.[0].number')
-          if test -n "$EXISTING"; then
+          if [ -n "$EXISTING" ]; then
             echo "Pull request #$EXISTING already open."
           else
             gh pr create \
               --title "Sync upstream oh-my-fish master" \
-              --body "$(cat <<'EOF'
-## Summary
-- Merges latest changes from [oh-my-fish/oh-my-fish](https://github.com/oh-my-fish/oh-my-fish) master
-- Re-applies fork-specific install URLs and regenerates `bin/install.sha256`
+              --body "## Summary
+          - Merges latest changes from [oh-my-fish/oh-my-fish](https://github.com/oh-my-fish/oh-my-fish) master
+          - Re-applies fork-specific install URLs and regenerates \`bin/install.sha256\`
 
-## Test plan
-- [ ] Review merge conflicts (if any)
-- [ ] Verify `bin/install` points at `chrisflory/oh-my-fish`
-- [ ] Verify `repositories` points at `chrisflory/packages-main`
-- [ ] Run `fish bin/install --check`
-- [ ] Run `fish -c 'fish-spec pkg/{fish-spec,omf}/spec/*_spec.fish'`
-EOF
-)"
+          ## Test plan
+          - [ ] Review merge conflicts (if any)
+          - [ ] Verify \`bin/install\` points at \`chrisflory/oh-my-fish\`
+          - [ ] Verify \`repositories\` points at \`chrisflory/packages-main\`
+          - [ ] Run \`fish bin/install --check\`
+          - [ ] Run fish-spec tests"
           fi
