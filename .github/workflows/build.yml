@@ -1,3 +1,4 @@
+# CI for the chrisflory/oh-my-fish fork (Fish 3.x / 4.x matrix).
 name: Build
 on:
   push:
@@ -6,6 +7,7 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
+  workflow_dispatch:
 jobs:
   build-linux:
     strategy:

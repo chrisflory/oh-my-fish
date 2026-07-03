@@ -1,9 +1,15 @@
+# Weekly upstream sync for the chrisflory fork (also runnable manually).
 name: Sync upstream
 
 on:
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Optional note for this run'
+        required: false
+        default: 'manual'
 
 permissions:
   contents: write
