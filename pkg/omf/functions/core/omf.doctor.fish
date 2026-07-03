@@ -28,6 +28,43 @@ function __omf.doctor.fish_version
   end
 end
 
+function __omf.doctor.wsl
+  set -l is_wsl 0
+  if set -q WSL_DISTRO_NAME
+    set is_wsl 1
+  else if test -f /proc/version; and string match -q '*icrosoft*' (cat /proc/version)
+    set is_wsl 1
+  end
+
+  if test $is_wsl -eq 0
+    return 0
+  end
+
+  set -l wsl_label "(unknown distro)"
+  if set -q WSL_DISTRO_NAME; and test -n "$WSL_DISTRO_NAME"
+    set wsl_label "($WSL_DISTRO_NAME)"
+  end
+  echo "Environment:          WSL $wsl_label"
+
+  if type -q git; and git --version | string match -qi '*windows*'
+    echo (omf::err)"Warning: "(omf::off)"Git for Windows is on PATH. OMF requires Linux git inside WSL."
+    echo "  Remove Windows Git from PATH or uninstall Git for Windows."
+    echo "  See: https://github.com/chrisflory/oh-my-fish#installing-on-windows-wsl"
+    echo
+    return 1
+  end
+
+  if set -q OMF_PATH; and string match -q '/mnt/*' $OMF_PATH
+    echo (omf::err)"Warning: "(omf::off)"OMF is installed on the Windows filesystem "(omf::em)$OMF_PATH(omf::off)"."
+    echo "  File I/O across /mnt/c is slower. Prefer a Linux home path, e.g.:"
+    echo (omf::em)"  bin/install --path=~/.local/share/omf --config=~/.config/omf"(omf::off)
+    echo
+    return 1
+  end
+
+  return 0
+end
+
 function __omf.doctor.git_version
   set -l min_version 1.9.5
   set -l current_version
@@ -53,6 +90,7 @@ function omf.doctor
 
   __omf.doctor.fish_version; or set -l doctor_failed
   __omf.doctor.git_version; or set -l doctor_failed
+  __omf.doctor.wsl; or set -l doctor_failed
   __omf.doctor.theme; or set -l doctor_failed
 
   fish "$OMF_PATH/bin/install" --check

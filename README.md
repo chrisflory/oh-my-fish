@@ -1,11 +1,11 @@
-> ⚠️ Oh My Fish has been unmaintained for years, and certain parts of it may not work for you. A few themes and packages are currently broken, and the code is due a significant overhaul. The current set of maintainers have ran out of steam, so if you are interested in becoming a maintainer send an email to *oh-my-fish [at] googlegroups.com*.
+> Personal fork of [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish) — installs from [`chrisflory/oh-my-fish`](https://github.com/chrisflory/oh-my-fish) and [`chrisflory/packages-main`](https://github.com/chrisflory/packages-main). Report core OMF bugs [upstream](https://github.com/oh-my-fish/oh-my-fish/issues).
 
 <img src="https://cdn.rawgit.com/oh-my-fish/oh-my-fish/e4f1c2e0219a17e2c748b824004c8d0b38055c16/docs/logo.svg" align="left" width="192px" height="192px"/>
 <img align="left" width="0" height="192px" hspace="10"/>
 
 > The <a href="http://fishshell.com">Fishshell</a> Framework
 
-[![MIT License](https://img.shields.io/badge/license-MIT-007EC7.svg?style=flat-square)](/LICENSE) [![Fish Shell Version](https://img.shields.io/badge/fish-≥v2.2.0-007EC7.svg?style=flat-square)](http://fishshell.com) [![Build](https://github.com/oh-my-fish/oh-my-fish/workflows/Build/badge.svg)](https://github.com/oh-my-fish/oh-my-fish/actions?query=workflow%3ABuild)
+[![MIT License](https://img.shields.io/badge/license-MIT-007EC7.svg?style=flat-square)](/LICENSE) [![Fish Shell Version](https://img.shields.io/badge/fish-≥v3.0.0-007EC7.svg?style=flat-square)](http://fishshell.com) [![Build](https://github.com/chrisflory/oh-my-fish/workflows/Build/badge.svg)](https://github.com/chrisflory/oh-my-fish/actions?query=workflow%3ABuild)
 
 
 Oh My Fish provides core infrastructure to allow you to install packages which extend or modify the look of your shell. It's fast, extensible and easy to use.
@@ -22,6 +22,7 @@ Oh My Fish provides core infrastructure to allow you to install packages which e
 
 ## Table of contents
 * [Installation](#installation)
+  * [Installing on Windows (WSL)](#installing-on-windows-wsl)
 * [Getting Started (command descriptions)](#getting-started)
 * [Advanced](#advanced)
   * [Startup](#startup)
@@ -65,14 +66,32 @@ Run `install --help` for a complete list of install options you can customize.
 
 #### Requirements
 
-- **fish** shell, version 2.2 or later
+- **fish** shell, version 3.0 or later
 - **git**, version 1.9.5 or later
 
-#### Known Issues
+#### Installing on Windows (WSL)
 
-- Due to a regression bug in fish 2.6 with some terminal emulators, right prompts make the shell unusable.
-  OMF's `default` theme features a right prompt, so it's necessary to use an alternative theme until a fix is released.
-  (see [#541](https://github.com/oh-my-fish/oh-my-fish/issues/541))
+Oh My Fish targets Unix environments. On Windows, use [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended) or native Fish via a package manager, then install from inside a Linux shell.
+
+1. Install WSL2 and a Linux distro (e.g. Ubuntu).
+2. Install Fish inside WSL: `sudo apt install fish` (Debian/Ubuntu) or your distro's package.
+3. Run the install one-liner from WSL:
+
+```fish
+curl https://raw.githubusercontent.com/chrisflory/oh-my-fish/master/bin/install | fish
+```
+
+Keep OMF on the Linux filesystem (`~/.local/share/omf`), not under `/mnt/c/`, for better performance.
+
+**Important:** Do not use Git for Windows inside WSL. The installer blocks it; use the Linux `git` package instead. Run `omf doctor` after install to verify your environment.
+
+Optional: from PowerShell, run `tools/install-windows.ps1` to check WSL and Fish, then print the install command.
+
+Install the [`winfish`](https://github.com/chrisflory/pkg-winfish) plugin for WSL path helpers and Cursor/IDE shortcuts:
+
+```fish
+omf install winfish
+```
 
 
 ## Getting Started
@@ -197,7 +216,9 @@ Every time a package/theme is installed or removed, the `bundle` file is updated
 
 #### Older fish versions
 
-In fish 2.2, there is no `conf.d` directory, so the startup code has to be placed in the fish config file (`~/.config/fish/config.fish`).
+Fish 3.0 or later is required. If you are on an older version, upgrade Fish before installing Oh My Fish.
+
+In fish versions before 2.2, there is no `conf.d` directory, so the startup code has to be placed in the fish config file (`~/.config/fish/config.fish`).
 
 It's highly recommended that your custom startup commands go into `init.fish` file instead of `~/.config/fish/config.fish`, as this allows you to keep the whole `$OMF_CONFIG` directory under version control.
 

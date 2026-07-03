@@ -1,0 +1,82 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/oh-my-fish/oh-my-fish.git
+          git fetch upstream master
+
+      - name: Check if behind upstream
+        id: behind
+        run: |
+          BEHIND=$(git rev-list --count HEAD..upstream/master)
+          echo "count=$BEHIND" >> "$GITHUB_OUTPUT"
+          if test "$BEHIND" -eq 0; then
+            echo "Already up to date with upstream."
+          fi
+
+      - name: Merge upstream
+        if: steps.behind.outputs.count != '0'
+        run: |
+          git checkout -B sync/upstream-master
+          git merge upstream/master --no-edit
+
+      - name: Restore fork URLs
+        if: steps.behind.outputs.count != '0'
+        run: |
+          sed -i 's|set OMF_REPO_URI "https://github.com/oh-my-fish/oh-my-fish"|set OMF_REPO_URI "https://github.com/chrisflory/oh-my-fish"|' bin/install
+          sed -i 's|raw.githubusercontent.com/oh-my-fish/oh-my-fish|raw.githubusercontent.com/chrisflory/oh-my-fish|g' README.md
+          sed -i 's|git clone https://github.com/oh-my-fish/oh-my-fish|git clone https://github.com/chrisflory/oh-my-fish|g' README.md
+          echo "https://github.com/chrisflory/packages-main master" > repositories
+          shasum -a 256 bin/install | awk '{print $1 " install"}' > bin/install.sha256
+          git add README.md bin/install bin/install.sha256 repositories
+          git diff --staged --quiet || git commit -m "Restore fork URLs after upstream sync"
+
+      - name: Create pull request
+        if: steps.behind.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push -u origin sync/upstream-master --force
+          EXISTING=$(gh pr list --head sync/upstream-master --json number --jq '.[0].number')
+          if test -n "$EXISTING"; then
+            echo "Pull request #$EXISTING already open."
+          else
+            gh pr create \
+              --title "Sync upstream oh-my-fish master" \
+              --body "$(cat <<'EOF'
+## Summary
+- Merges latest changes from [oh-my-fish/oh-my-fish](https://github.com/oh-my-fish/oh-my-fish) master
+- Re-applies fork-specific install URLs and regenerates `bin/install.sha256`
+
+## Test plan
+- [ ] Review merge conflicts (if any)
+- [ ] Verify `bin/install` points at `chrisflory/oh-my-fish`
+- [ ] Verify `repositories` points at `chrisflory/packages-main`
+- [ ] Run `fish bin/install --check`
+- [ ] Run `fish -c 'fish-spec pkg/{fish-spec,omf}/spec/*_spec.fish'`
+EOF
+)"
+          fi
