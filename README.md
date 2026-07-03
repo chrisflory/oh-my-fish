@@ -87,12 +87,6 @@ Keep OMF on the Linux filesystem (`~/.local/share/omf`), not under `/mnt/c/`, fo
 
 Optional: from PowerShell, run `tools/install-windows.ps1` to check WSL and Fish, then print the install command.
 
-Install the [`winfish`](https://github.com/chrisflory/pkg-winfish) plugin for WSL path helpers and Cursor/IDE shortcuts:
-
-```fish
-omf install winfish
-```
-
 
 ## Getting Started
 

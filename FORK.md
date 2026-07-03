@@ -13,7 +13,6 @@ Personal distribution of [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish).
 Additional fork-only changes:
 
 - Windows/WSL install documentation and `omf doctor` WSL checks
-- [`pkg-winfish`](https://github.com/chrisflory/pkg-winfish) plugin in the package index
 - Weekly upstream sync GitHub Action (`.github/workflows/sync-upstream.yml`)
 
 ## Updating from this fork
